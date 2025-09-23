@@ -1,0 +1,8 @@
+# Abaikan seluruh folder source code Moodle
+/moodle
+
+# Abaikan folder data Moodle
+/moodledata
+
+# Abaikan folder data database
+/dbdata
