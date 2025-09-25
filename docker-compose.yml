@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   # Container untuk Database (PostgreSQL)
@@ -17,20 +17,30 @@ services:
 
   # Container untuk Web Server (Apache + PHP)
   web:
-        build: .
-        container_name: moodle-web
-        restart: unless-stopped
-        ports:
-          - "8081:80"
-        depends_on:
-          - db
-        volumes:
-          - ./moodle:/var/www/html
-          - ./moodledata:/var/www/moodledata
-          - ./apache-moodle.conf:/etc/apache2/sites-available/000-default.conf
-          - ./moodle-php.ini:/usr/local/etc/php/conf.d/moodle-settings.ini
-        networks:
-          - moodle-net
+    build: .
+    container_name: moodle-web
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    volumes:
+      - ./moodle:/var/www/html
+      - ./moodledata:/var/www/moodledata
+      - ./apache-moodle.conf:/etc/apache2/sites-available/000-default.conf
+      - ./moodle-php.ini:/usr/local/etc/php/conf.d/moodle-settings.ini
+    networks:
+      - moodle-net
+
+  # Container untuk Manajemen Database (Adminer) - INI YANG DITAMBAHKAN
+  adminer:
+    image: adminer
+    container_name: moodle-adminer
+    restart: unless-stopped
+    ports:
+      - "8088:8080" # <-- Akses melalui http://localhost:8088
+    networks:
+      - moodle-net
 
 networks:
   moodle-net:
