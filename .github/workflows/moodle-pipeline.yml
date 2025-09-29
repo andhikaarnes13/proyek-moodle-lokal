@@ -34,6 +34,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # 3. Menyiapkan metadata untuk image (nama dan tag)
+      # - name: Extract metadata (tags, labels) for Docker
+      #   id: meta
+      #   uses: docker/metadata-action@v5
+      #   with:
+      #     images: ghcr.io/${{ github.repository }}
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
