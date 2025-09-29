@@ -1,0 +1,41 @@
+services:
+  # Container untuk Database (PostgreSQL) - tidak berubah
+  db:
+    image: postgres:15
+    container_name: moodle-db-deploy
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: moodleuser
+      POSTGRES_PASSWORD: yourstrongpassword
+      POSTGRES_DB: moodledb
+    volumes:
+      - ./dbdata:/var/lib/postgresql/data
+    networks:
+      - moodle-net-deploy
+
+  # Container untuk Web Server (Apache + PHP)
+  web:
+    # --- PERUBAHAN UTAMA DI SINI ---
+    # Mengambil image dari GitHub Container Registry, bukan build lokal
+    image: ghcr.io/andhikaarnes13/proyek-moodle-lokal:latest
+    container_name: moodle-web-deploy
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    volumes:
+      # Volume untuk kode Moodle dan data tetap diperlukan
+      - ./moodle:/var/www/html
+      - ./moodledata:/var/www/moodledata
+      # Konfigurasi Apache dan PHP juga tetap diperlukan
+      - ./apache-moodle.conf:/etc/apache2/sites-available/000-default.conf
+      - ./moodle-php.ini:/usr/local/etc/php/conf.d/moodle-settings.ini
+    networks:
+      - moodle-net-deploy
+
+networks:
+  moodle-net-deploy:
+    driver: bridge

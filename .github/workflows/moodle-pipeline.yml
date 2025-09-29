@@ -1,0 +1,50 @@
+# Nama workflow yang akan muncul di tab "Actions" GitHub
+name: Moodle CI/CD Pipeline
+
+# Pemicu: Jalankan workflow ini setiap kali ada push ke branch 'main'
+on:
+  push:
+    branches: [ "main" ]
+
+# Daftar pekerjaan (jobs) yang akan dijalankan
+jobs:
+  build-and-push:
+    # Nama pekerjaan
+    name: Build and Push to Registry
+    # Sistem operasi yang digunakan untuk menjalankan job (runner)
+    runs-on: ubuntu-latest
+
+    # Izin yang dibutuhkan oleh job untuk bisa push ke registry
+    permissions:
+      contents: read
+      packages: write
+
+    # Langkah-langkah yang akan dieksekusi
+    steps:
+      # 1. Mengambil kode dari repository
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      # 2. Login ke GitHub Container Registry (GHCR)
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 3. Menyiapkan metadata untuk image (nama dan tag)
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+
+      # 4. Membangun image dari Dockerfile dan push ke GHCR
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
