@@ -39,6 +39,11 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
+          tags: |
+            # Menambahkan tag :latest jika push ke branch default (main)
+            type=raw,value=latest,enable={{is_default_branch}}
+            # Menambahkan tag dengan nama branch (misal: :main)
+            type=ref,event=branch
 
       # 4. Membangun image dari Dockerfile dan push ke GHCR
       - name: Build and push Docker image
