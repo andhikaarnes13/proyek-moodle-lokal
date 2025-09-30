@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 services:
   # Container untuk Database (PostgreSQL)
@@ -6,6 +6,8 @@ services:
     image: postgres:15
     container_name: moodle-db
     restart: unless-stopped
+    # ports:
+    #   - "5432:5432"
     environment:
       POSTGRES_USER: moodleuser
       POSTGRES_PASSWORD: yourstrongpassword
@@ -17,22 +19,21 @@ services:
 
   # Container untuk Web Server (Apache + PHP)
   web:
-    build: .
-    container_name: moodle-web
-    restart: unless-stopped
-    ports:
-      - "8081:80"
-    depends_on:
-      - db
-    volumes:
-      - ./moodle:/var/www/html
-      - ./moodledata:/var/www/moodledata
-      - ./apache-moodle.conf:/etc/apache2/sites-available/000-default.conf
-      - ./moodle-php.ini:/usr/local/etc/php/conf.d/moodle-settings.ini
-    networks:
-      - moodle-net
-
-  # Container untuk Manajemen Database (Adminer) - INI YANG DITAMBAHKAN
+        build: .
+        container_name: moodle-web
+        restart: unless-stopped
+        ports:
+          - "8081:80"
+        depends_on:
+          - db
+        volumes:
+          - ./moodle:/var/www/html
+          - ./moodledata:/var/www/moodledata
+          - ./apache-moodle.conf:/etc/apache2/sites-available/000-default.conf
+          - ./moodle-php.ini:/usr/local/etc/php/conf.d/moodle-settings.ini
+        networks:
+          - moodle-net
+    # Container untuk Manajemen Database (Adminer) - INI YANG DITAMBAHKAN
   adminer:
     image: adminer
     container_name: moodle-adminer
